@@ -32,7 +32,6 @@ import (
 	_ "github.com/benthosdev/benthos/v4/internal/impl/nanomsg"
 	_ "github.com/benthosdev/benthos/v4/internal/impl/nats"
 	_ "github.com/benthosdev/benthos/v4/internal/impl/nsq"
-	_ "github.com/benthosdev/benthos/v4/internal/impl/parquet"
 	_ "github.com/benthosdev/benthos/v4/internal/impl/prometheus"
 	_ "github.com/benthosdev/benthos/v4/internal/impl/pure"
 	_ "github.com/benthosdev/benthos/v4/internal/impl/redis"
@@ -40,6 +39,7 @@ import (
 	_ "github.com/benthosdev/benthos/v4/internal/impl/sql"
 	_ "github.com/benthosdev/benthos/v4/internal/impl/statsd"
 	_ "github.com/benthosdev/benthos/v4/internal/impl/xml"
+	_ "github.com/benthosdev/benthos/v4/internal/impl/xparquet"
 	"github.com/benthosdev/benthos/v4/internal/template"
 
 	// Import all (supported) sql drivers

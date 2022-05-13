@@ -64,7 +64,7 @@ The schema must be specified as a JSON string, containing an object that describ
 A schema can be derived from a source file using https://github.com/xitongsys/parquet-go/tree/master/tool/parquet-tools:
 
 ```sh
-./parquet-tools -cmd schema -file foo.parquet
+.parquet-tools -cmd schema -file foo.parquet
 ```
 
 ## Fields
@@ -145,7 +145,7 @@ output:
       count: 100
       period: 30s
       processors:
-        - parquet:
+        - xparquet:
             operator: from_json
             schema: |-
               {

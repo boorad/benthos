@@ -1,12 +1,15 @@
-package parquet
+package xparquet
 
 import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/segmentio/parquet-go"
-	"github.com/segmentio/parquet-go/compress"
 	"os"
+
+	"github.com/xitongsys/parquet-go-source/buffer"
+	"github.com/xitongsys/parquet-go/parquet"
+	"github.com/xitongsys/parquet-go/reader"
+	"github.com/xitongsys/parquet-go/writer"
 
 	"github.com/benthosdev/benthos/v4/public/service"
 )
@@ -87,7 +90,7 @@ output:
       count: 100
       period: 30s
       processors:
-        - parquet:
+        - xparquet:
             operator: from_json
             schema: |-
               {
@@ -103,7 +106,7 @@ output:
 
 func init() {
 	err := service.RegisterBatchProcessor(
-		"parquet", parquetProcessorConfig(),
+		"xparquet", parquetProcessorConfig(),
 		func(conf *service.ParsedConfig, mgr *service.Resources) (service.BatchProcessor, error) {
 			return newParquetProcessorFromConfig(conf, mgr.Logger())
 		})
@@ -115,12 +118,12 @@ func init() {
 
 //------------------------------------------------------------------------------
 
-func getCompressionType(str string) (compress.Codec, error) {
+func getCompressionType(str string) (parquet.CompressionCodec, error) {
 	switch str {
 	case "uncompressed":
-		return parquet.Uncompressed, nil
+		return parquet.CompressionCodec_UNCOMPRESSED, nil
 	case "snappy":
-		return parquet.Snappy, nil
+		return parquet.CompressionCodec_SNAPPY, nil
 	case "gzip":
 		return parquet.CompressionCodec_GZIP, nil
 	case "lz4":
@@ -210,11 +213,9 @@ func (s *parquetProcessor) processBatchReader(ctx context.Context, batch service
 			return nil, fmt.Errorf("failed to read message contents: %w", err)
 		}
 
-		buf := parquet.NewBuffer(
-			//mBytes
-		)
+		buf := buffer.NewBufferFileFromBytes(mBytes)
 
-		pr, err := parquet.NewReader(buf, s.schema, 1)
+		pr, err := reader.NewParquetReader(buf, s.schema, 1)
 		if err != nil {
 			return nil, fmt.Errorf("failed to create parquet reader: %w", err)
 		}
@@ -244,9 +245,9 @@ func (s *parquetProcessor) processBatchWriter(ctx context.Context, batch service
 		return nil, nil
 	}
 
-	buf := parquet.NewBuffer()
+	buf := buffer.NewBufferFile()
 
-	pw, err := parquet.NewWriter(s.schema, buf, 1)
+	pw, err := writer.NewJSONWriter(s.schema, buf, 1)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create parquet writer: %w", err)
 	}

@@ -1,4 +1,4 @@
-package parquet
+package xparquet
 
 import (
 	"context"
